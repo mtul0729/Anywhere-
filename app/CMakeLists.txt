@@ -19,5 +19,11 @@
                  # Provides a relative path to your source file(s).
             src/main/cpp/izuko.cpp)
 
+    if(NOT DEFINED EXPECTED_SIGN_MD5)
+        set(EXPECTED_SIGN_MD5 "D689B2D1B05AD9C1F7E41B4608C4DDF3")
+    endif()
+    target_compile_definitions(izuko PRIVATE
+        "EXPECTED_SIGN_MD5=\"${EXPECTED_SIGN_MD5}\"")
+
     # Specifies a path to native header files.
     include_directories(src/main/cpp/include/)

@@ -8,9 +8,13 @@
 #include <malloc.h>
 #include "izuko.h"
 
+#ifndef EXPECTED_SIGN_MD5
+#define EXPECTED_SIGN_MD5 "D689B2D1B05AD9C1F7E41B4608C4DDF3"
+#endif
+
 extern "C"
 const char *PACKAGE_NAME = "com.absinthe.anywhere_";
-const char *RELEASE_SIGN_MD5 = "D689B2D1B05AD9C1F7E41B4608C4DDF3";
+const char *RELEASE_SIGN_MD5 = EXPECTED_SIGN_MD5;
 const char *CIPHER_KEY = "absintheeeeeeeeeeeeeeeeeeeeeeeee";
 
 /**

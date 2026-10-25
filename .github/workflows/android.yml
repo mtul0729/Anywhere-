@@ -25,11 +25,14 @@ on:
       - 'LICENSE'
       - 'NOTICE'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, '[skip ci]') }}
 
     steps:
       - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
@@ -40,96 +43,98 @@ jobs:
           distribution: 'zulu'
           java-version: 17
       - name: Retrieve version
-        run: |
-          echo VERSION=$(echo ${{ github.sha }} | head -c 10) >> $GITHUB_ENV
-      - name: Build with Gradle
-        run: bash ./gradlew -PappVerName=${{ env.VERSION }} assembleRelease
-      - name: Sign Android release
-        if: success() && github.event_name != 'pull_request' && github.repository == 'zhaobozhen/Anywhere-'
-        id: sign
-        uses: r0adkll/sign-android-release@v1.0.4
         env:
-          BUILD_TOOLS_VERSION: "32.0.0"
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-      - name: Upload built apk
-        if: success() && github.event_name != 'pull_request' && github.repository == 'zhaobozhen/Anywhere-'
+          RUN_NUMBER: ${{ github.run_number }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          VERSION_CODE=$((2050500 + RUN_NUMBER))
+          VERSION_NAME="2.5.5-${COMMIT_SHA:0:7}.${RUN_NUMBER}"
+          {
+            echo "VERSION_CODE=$VERSION_CODE"
+            echo "VERSION_NAME=$VERSION_NAME"
+            echo "RELEASE_TAG=v$VERSION_NAME"
+          } >> "$GITHUB_ENV"
+      - name: Prepare signing key
+        if: github.event_name != 'pull_request'
+        id: sign
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS }}
+        run: |
+          if [ -z "$SIGNING_KEY" ] || [ -z "$KEY_STORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ]; then
+            echo "Missing signing secrets: SIGNING_KEY, KEY_STORE_PASSWORD or ALIAS" >&2
+            exit 1
+          fi
+          KEYSTORE="$RUNNER_TEMP/anywhere-release.jks"
+          printf '%s' "$SIGNING_KEY" | base64 --decode > "$KEYSTORE"
+          SIGN_MD5=$(keytool -exportcert \
+            -keystore "$KEYSTORE" \
+            -alias "$KEY_ALIAS" \
+            -storepass "$KEY_STORE_PASSWORD" \
+            | openssl dgst -md5 -binary \
+            | xxd -p -u \
+            | tr -d '\n')
+          {
+            echo "EXPECTED_SIGN_MD5=$SIGN_MD5"
+          } >> "$GITHUB_ENV"
+          echo "Signing certificate MD5: $SIGN_MD5"
+      - name: Build signed release
+        if: github.event_name != 'pull_request'
+        env:
+          ANYWHERE_KEYSTORE_PATH: ${{ runner.temp }}/anywhere-release.jks
+          ANYWHERE_KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          ANYWHERE_KEY_ALIAS: ${{ secrets.ALIAS }}
+          ANYWHERE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          bash ./gradlew \
+            -PappVerName="$VERSION_NAME" \
+            -PappVerCode="$VERSION_CODE" \
+            -PexpectedSignMd5="$EXPECTED_SIGN_MD5" \
+            assembleRelease
+      - name: Build unsigned release
+        if: github.event_name == 'pull_request'
+        run: |
+          bash ./gradlew \
+            -PappVerName="$VERSION_NAME" \
+            -PappVerCode="$VERSION_CODE" \
+            assembleRelease
+      - name: Verify signed APK
+        if: github.event_name != 'pull_request'
+        run: |
+          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -n 1)
+          CERT_MD5=$("$APKSIGNER" verify --print-certs "$APK" \
+            | awk -F': ' '/Signer #1 certificate MD5 digest/ {print toupper($2)}')
+          echo "APK certificate MD5: $CERT_MD5"
+          if [ "$CERT_MD5" != "$EXPECTED_SIGN_MD5" ]; then
+            echo "APK certificate MD5 does not match signing key" >&2
+            exit 1
+          fi
+      - name: Upload signed release apk
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: snapshot
-          path: ${{ steps.sign.outputs.signedReleaseFile }}
-      - name: Upload mappings
-        if: success() && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v4
-        with:
-          name: mappings
-          path: "app/build/outputs/mapping/release"
-      # Forks never reach the sign step (gated on upstream repo + secrets),
-      # so upload the unsigned release APK there instead. Unsigned APKs
-      # cannot be installed directly — they are for inspection/smoke tests.
+          name: apk-release
+          path: "app/build/outputs/apk/release/*.apk"
       - name: Upload unsigned release apk
-        if: success() && steps.sign.conclusion == 'skipped'
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: apk-unsigned
           path: "app/build/outputs/apk/release/*.apk"
-      # Debug builds skip the release anti-tamper checks (signature/
-      # PoliceMan in AnywhereApplication), so they run when re-signed.
-      - name: Build debug APK
-        if: success() && steps.sign.conclusion == 'skipped'
-        run: bash ./gradlew assembleDebug
-      - name: Upload debug apk
-        if: success() && steps.sign.conclusion == 'skipped'
+      - name: Upload mappings
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: apk-debug
-          path: "app/build/outputs/apk/debug/*.apk"
-      - name: Get apk info
-        if: success() && github.event_name != 'pull_request' && github.repository == 'zhaobozhen/Anywhere-'
-        id: apk-info
-        uses: zhaobozhen/apk-info-action@1.1.2
-        with:
-          apk-path: ${{ steps.sign.outputs.signedReleaseFile }}
-      # TODO: AppCenter mapping upload disabled — zhaobozhen/AppCenter-Github-Action
-      # no longer resolves ("repository not found") and blocks job setup even
-      # when the step would be skipped. Restore with a working ref to re-enable:
-      #   appcenter crashes upload-mappings --mapping app/build/outputs/mapping/release/mapping.txt
-      #     --version-name ${{ steps.apk-info.outputs.version-name }}
-      #     --version-code ${{ steps.apk-info.outputs.version-code }}
-      #     --app zhaobozhen2025-gmail.com/Anywhere --token ${{ secrets.APP_CENTER_TOKEN }}
-      - name: Send commit to telegram
-        if: success() && github.repository == 'zhaobozhen/Anywhere-' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+          name: mappings
+          path: "app/build/outputs/mapping/release"
+      - name: Create GitHub release
+        if: github.event_name != 'pull_request'
         env:
-          CHANNEL_ID: ${{ secrets.TELEGRAM_TO }}
-          BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          FILE: ${{ github.workspace }}/${{ steps.sign.outputs.signedReleaseFile }}
-          COMMIT_MESSAGE: |+
-            New push to github\!
-            ```
-            ${{ github.event.head_commit.message }}
-            ```by `${{ github.event.head_commit.author.name }}`
-            See commit detail [here](${{ github.event.head_commit.url }})
-            Snapshot apk is attached
+          GH_TOKEN: ${{ github.token }}
         run: |
-          ESCAPED=`python3 -c 'import json,os,urllib.parse; print(urllib.parse.quote(json.dumps(os.environ["COMMIT_MESSAGE"])))'`
-          curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22:%22document%22,%20%22media%22:%22attach://release%22,%22parse_mode%22:%22MarkdownV2%22,%22caption%22:${ESCAPED}%7D%5D"  -F release="@$FILE"
-  skipped:
-    runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.head_commit.message, '[skip ci]') }}
-    steps:
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
-      - name: Send commit to telegram
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          format: markdown
-          message: |+
-            New push to github!
-            *${{ github.event.head_commit.message }}* by ${{ github.event.head_commit.author.name }}
-            See commit detail [here](${{ github.event.head_commit.url }})
-            This push skipped building
+          gh release create "$RELEASE_TAG" \
+            app/build/outputs/apk/release/*.apk \
+            --title "Anywhere- $VERSION_NAME" \
+            --notes "Automated build from ${GITHUB_SHA}. versionCode: ${VERSION_CODE}."
