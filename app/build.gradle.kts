@@ -15,16 +15,6 @@ val appVerName = providers.gradleProperty("appVerName").getOrElse(defaultVerName
 val appVerCode = providers.gradleProperty("appVerCode").getOrElse(defaultVerCode.toString()).toInt()
 val expectedSignMd5 = providers.gradleProperty("expectedSignMd5")
   .getOrElse("D689B2D1B05AD9C1F7E41B4608C4DDF3")
-val releaseKeystorePath = providers.environmentVariable("ANYWHERE_KEYSTORE_PATH").orNull
-val releaseKeystorePassword = providers.environmentVariable("ANYWHERE_KEYSTORE_PASSWORD").orNull
-val releaseKeyAlias = providers.environmentVariable("ANYWHERE_KEY_ALIAS").orNull
-val releaseKeyPassword = providers.environmentVariable("ANYWHERE_KEY_PASSWORD").orNull
-val hasReleaseSigning = listOf(
-  releaseKeystorePath,
-  releaseKeystorePassword,
-  releaseKeyAlias,
-  releaseKeyPassword
-).all { !it.isNullOrBlank() }
 
 android {
   compileSdk = 35
@@ -61,17 +51,6 @@ android {
     viewBinding = true
   }
 
-  signingConfigs {
-    if (hasReleaseSigning) {
-      create("release") {
-        storeFile = file(releaseKeystorePath!!)
-        storePassword = releaseKeystorePassword
-        keyAlias = releaseKeyAlias
-        keyPassword = releaseKeyPassword
-      }
-    }
-  }
-
   buildTypes {
     debug {
       applicationIdSuffix = ".debug"
@@ -81,9 +60,6 @@ android {
     release {
       isMinifyEnabled = true
       isShrinkResources = true
-      if (hasReleaseSigning) {
-        signingConfig = signingConfigs.getByName("release")
-      }
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
