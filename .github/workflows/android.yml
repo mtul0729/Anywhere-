@@ -126,7 +126,7 @@ jobs:
           fi
           printf '%s\n' "$CERT_OUTPUT"
           CERT_MD5=$(printf '%s\n' "$CERT_OUTPUT" \
-            | sed -n 's/^Signer #1 certificate MD5 digest: //p' \
+            | sed -n 's/^.*Signer.*certificate MD5 digest: //p' \
             | tr '[:lower:]' '[:upper:]')
           echo "APK certificate MD5: $CERT_MD5"
           if [ "$CERT_MD5" != "$EXPECTED_SIGN_MD5" ]; then
