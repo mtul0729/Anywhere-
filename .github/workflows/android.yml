@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - alpha
     paths-ignore:
       - '.idea/**'
       - '.gitattributes'
@@ -50,13 +51,23 @@ jobs:
         env:
           RUN_NUMBER: ${{ github.run_number }}
           COMMIT_SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           VERSION_CODE=$((2050500 + RUN_NUMBER))
-          VERSION_NAME="2.5.5-${COMMIT_SHA:0:7}.${RUN_NUMBER}"
+          if [ "$REF_NAME" = "alpha" ]; then
+            VERSION_NAME="2.5.5-alpha.${RUN_NUMBER}"
+            RELEASE_TAG="v$VERSION_NAME"
+            PRERELEASE="true"
+          else
+            VERSION_NAME="2.5.5-${COMMIT_SHA:0:7}.${RUN_NUMBER}"
+            RELEASE_TAG="v$VERSION_NAME"
+            PRERELEASE="false"
+          fi
           {
             echo "VERSION_CODE=$VERSION_CODE"
             echo "VERSION_NAME=$VERSION_NAME"
-            echo "RELEASE_TAG=v$VERSION_NAME"
+            echo "RELEASE_TAG=$RELEASE_TAG"
+            echo "PRERELEASE=$PRERELEASE"
           } >> "$GITHUB_ENV"
       - name: Prepare signing key
         if: github.event_name != 'pull_request'
@@ -160,7 +171,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$RELEASE_TAG" \
-            app/build/outputs/apk/release/*.apk \
-            --title "Anywhere- $VERSION_NAME" \
-            --notes "Automated build from ${GITHUB_SHA}. versionCode: ${VERSION_CODE}."
+          if [ "$PRERELEASE" = "true" ]; then
+            gh release create "$RELEASE_TAG" \
+              app/build/outputs/apk/release/*.apk \
+              --title "Anywhere- $VERSION_NAME (alpha)" \
+              --prerelease \
+              --notes "Alpha build from ${GITHUB_SHA}. versionCode: ${VERSION_CODE}."
+          else
+            gh release create "$RELEASE_TAG" \
+              app/build/outputs/apk/release/*.apk \
+              --title "Anywhere- $VERSION_NAME" \
+              --notes "Automated build from ${GITHUB_SHA}. versionCode: ${VERSION_CODE}."
+          fi
