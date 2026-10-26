@@ -42,6 +42,21 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+      - name: Cache Android SDK components
+        uses: actions/cache@v6
+        with:
+          path: |
+            ${{ env.ANDROID_HOME }}/ndk/25.0.8775105
+            ${{ env.ANDROID_HOME }}/cmake
+            ${{ env.ANDROID_HOME }}/platforms/android-35
+            ${{ env.ANDROID_HOME }}/build-tools
+          key: android-sdk-${{ runner.os }}-ndk25-cmake-platform35-buildtools-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            android-sdk-${{ runner.os }}-ndk25-cmake-platform35-buildtools-
       - name: Retrieve version
         env:
           RUN_NUMBER: ${{ github.run_number }}
