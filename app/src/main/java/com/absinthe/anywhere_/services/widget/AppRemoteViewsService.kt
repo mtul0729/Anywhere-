@@ -135,6 +135,7 @@ class AppRemoteViewsService : RemoteViewsService() {
     override fun onDestroy() {
       Timber.d("onDestroy")
       mList.clear()
+      mWorkerHandler.removeCallbacksAndMessages(null)
       mHandlerThread.quitSafely()
     }
 
@@ -150,14 +151,17 @@ class AppRemoteViewsService : RemoteViewsService() {
      * 创建并且填充，在指定索引位置显示的 View
      */
     override fun getViewAt(position: Int): RemoteViews? {
-      if (mList.isEmpty() || position < 0 || position >= mList.size || mContext.get() == null) {
-        return null
+      val context = mContext.get()
+      if (context == null || mList.isEmpty() || position < 0 || position >= mList.size) {
+        val packageName = context?.packageName ?: "com.absinthe.anywhere_"
+        return RemoteViews(packageName, R.layout.item_widget_list)
       }
+
       try {
         val ae = mList[position]
         var content = ae.appName
         try {
-          if (IceBox.getAppEnabledSetting(mContext.get(), ae.param1) != 0) {
+          if (IceBox.getAppEnabledSetting(context, ae.param1) != 0) {
             content = "\u2744" + content
           }
         } catch (e: PackageManager.NameNotFoundException) {
@@ -165,7 +169,6 @@ class AppRemoteViewsService : RemoteViewsService() {
         }
 
         // 创建在当前索引位置要显示的View
-        val context = mContext.get() ?: return null
         val rv = RemoteViews(context.packageName, R.layout.item_widget_list)
 
         // 设置要显示的内容
@@ -194,7 +197,8 @@ class AppRemoteViewsService : RemoteViewsService() {
         rv.setOnClickFillInIntent(R.id.rl_item, intent)
         return rv
       } catch (e: Exception) {
-        return null
+        Timber.e(e)
+        return RemoteViews(context.packageName, R.layout.item_widget_list)
       }
     }
 

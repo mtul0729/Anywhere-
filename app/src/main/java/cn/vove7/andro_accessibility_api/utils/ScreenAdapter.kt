@@ -55,12 +55,11 @@ object ScreenAdapter {
 
     val ps = Array(points.size) { Pair(0f, 0f) }
 
-    val index = 0
-    points.forEach {
+    points.forEachIndexed { index, point ->
       val x =
-        scaleX(it.first)
+        scaleX(point.first)
       val y =
-        scaleY(it.second)
+        scaleY(point.second)
       ps[index] = Pair(x, y)
     }
     return ps
@@ -71,10 +70,12 @@ object ScreenAdapter {
   fun scaleY(y: Int): Float = scaleY(y.toFloat())
 
   fun scaleX(x: Float): Float {
+    if (relWidth == 0) return x
     return (x / relWidth * deviceWidth)
   }
 
   fun scaleY(y: Float): Float {
+    if (relHeight == 0) return y
     return (y / relHeight * deviceHeight)
   }
 }
