@@ -81,7 +81,7 @@ APK 正则表达式的含义：
 ## 以后的正常更新
 
 1. 上游或本 fork 推送新提交到 `master` 后，GitHub Actions 会自动构建并创建新的 GitHub Release。
-2. 打开 Obtainium，下拉刷新；也可以在设置中启用后台更新检查和通知。
+2. 打开 Obtainium，下拉刷新；也可以在设置中启用后台更新检查和通知。Obtainium 对 GitHub Releases 有缓存，刚发布后可能需稍等一会儿，或在应用详情页手动刷新。
 3. 看到 Anywhere- 有新版本后，点击“更新”或“安装/更新”。
 4. Android 会覆盖安装新版本，应用数据通常保留。
 
