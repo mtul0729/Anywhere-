@@ -27,8 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
           fetch-depth: 0
+          path: source
       - name: Resolve release tag
         id: tag
         env:
@@ -45,7 +45,7 @@ jobs:
       - name: Resolve version
         id: version
         run: |
-          version=$(bash .github/scripts/release-version.sh "${{ steps.tag.outputs.tag }}")
+          version=$(bash source/.github/scripts/release-version.sh "${{ steps.tag.outputs.tag }}")
           {
             echo "version_name=$(sed -n 's/^version_name=//p' <<< "$version")"
             echo "version_code=$(sed -n 's/^version_code=//p' <<< "$version")"
@@ -56,9 +56,11 @@ jobs:
           TAG: ${{ steps.tag.outputs.tag }}
           PRERELEASE: ${{ steps.version.outputs.prerelease }}
         run: |
+          cd source
           git fetch --force origin \
             '+refs/heads/master:refs/remotes/origin/master' \
             '+refs/heads/alpha:refs/remotes/origin/alpha'
+          git checkout --detach "$TAG"
           if [[ "$PRERELEASE" = true ]]; then
             RELEASE_BRANCH=origin/alpha
           else
@@ -83,7 +85,7 @@ jobs:
           highest=0
           while IFS= read -r other; do
             [[ -n "$other" ]] || continue
-            code=$(bash .github/scripts/release-version.sh "$other" 2>/dev/null | sed -n 's/^version_code=//p') || continue
+            code=$(bash source/.github/scripts/release-version.sh "$other" 2>/dev/null | sed -n 's/^version_code=//p') || continue
             if (( code > highest )); then
               highest=$code
             fi
@@ -94,6 +96,7 @@ jobs:
             exit 1
           fi
       - name: Build unsigned release APK
+        working-directory: source
         run: |
           bash ./gradlew \
             -PappVerName="${{ steps.version.outputs.version_name }}" \
@@ -103,13 +106,13 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: release-unsigned
-          path: app/build/outputs/apk/release/*.apk
+          path: source/app/build/outputs/apk/release/*.apk
           retention-days: 7
       - name: Upload release mappings
         uses: actions/upload-artifact@v7
         with:
           name: release-mappings
-          path: app/build/outputs/mapping/release
+          path: source/app/build/outputs/mapping/release
           retention-days: 7
 
   publish:
@@ -213,13 +216,13 @@ jobs:
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-          COMMIT_SHA: ${{ github.sha }}
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists; leaving its assets unchanged."
             exit 0
           fi
 
+          COMMIT_SHA=$(git rev-parse HEAD)
           notes=$(mktemp)
           {
             echo "Commit: \`$COMMIT_SHA\`"
