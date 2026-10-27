@@ -24,6 +24,7 @@ import com.absinthe.anywhere_.services.overlay.CollectorService
 import com.absinthe.anywhere_.services.overlay.ICollectorService
 import com.absinthe.anywhere_.utils.AppUtils.openNewURLScheme
 import com.absinthe.anywhere_.utils.CommandUtils
+import com.absinthe.anywhere_.utils.ShortcutsUtils
 import com.absinthe.anywhere_.utils.ToastUtil
 import com.absinthe.anywhere_.utils.UxUtils
 import com.absinthe.anywhere_.utils.handler.Opener
@@ -153,7 +154,10 @@ class ShortcutsActivity : BaseActivity<ViewBinding>() {
                   setResult(
                     Activity.RESULT_OK, ShortcutManagerCompat.createShortcutResultIntent(
                       this,
-                      ShortcutInfoCompat.Builder(this, entity.id)
+                      ShortcutInfoCompat.Builder(
+                        this,
+                        ShortcutsUtils.pinnedShortcutId(entity.id)
+                      )
                         .setIntent(shortcutIntent)
                         .setShortLabel(entity.appName)
                         .setIcon(

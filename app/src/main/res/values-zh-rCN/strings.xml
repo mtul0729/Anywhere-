@@ -121,6 +121,8 @@
   <string name="toast_wrong_cmd">指令错误</string>
   <string name="toast_adb_result_process_failed">解析错误</string>
   <string name="toast_try_to_add_pinned_shortcut">已尝试添加</string>
+  <string name="toast_pinned_shortcut_requested">已请求创建，请在启动器中确认</string>
+  <string name="toast_pinned_shortcut_success">桌面快捷方式已创建</string>
   <string name="toast_backup_success">备份成功</string>
   <string name="toast_restore_success">恢复成功</string>
   <string name="toast_defrosting">正在解冻</string>

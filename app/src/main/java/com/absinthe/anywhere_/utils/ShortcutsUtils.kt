@@ -7,6 +7,7 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -16,12 +17,15 @@ import com.absinthe.anywhere_.constants.AnywhereType
 import com.absinthe.anywhere_.constants.Const
 import com.absinthe.anywhere_.constants.GlobalValues
 import com.absinthe.anywhere_.model.database.AnywhereEntity
+import com.absinthe.anywhere_.receiver.PinShortcutReceiver
 import com.absinthe.anywhere_.ui.editor.impl.SWITCH_OFF
 import com.absinthe.anywhere_.ui.shortcuts.ShortcutsActivity
 import com.absinthe.libraries.utils.extensions.dp
 import com.blankj.utilcode.util.Utils
 
 object ShortcutsUtils {
+
+  private const val PINNED_SHORTCUT_ID_PREFIX = "pinned_"
 
   val SHORTCUT_MANAGER: ShortcutManager? = if (AppUtils.atLeastNMR1()) {
     Utils.getApp().getSystemService(ShortcutManager::class.java)
@@ -106,40 +110,36 @@ object ShortcutsUtils {
 
   @RequiresApi(api = Build.VERSION_CODES.O)
   fun addPinnedShortcut(ae: AnywhereEntity, icon: Drawable, name: String) {
-    if (SHORTCUT_MANAGER!!.isRequestPinShortcutSupported) {
-      // Assumes there's already a shortcut with the ID "my-shortcut".
-      // The shortcut must be enabled.
+    if (SHORTCUT_MANAGER?.isRequestPinShortcutSupported == true) {
       val intent = Intent(Utils.getApp(), ShortcutsActivity::class.java).apply {
         action = ShortcutsActivity.ACTION_START_ENTITY
         putExtra(Const.INTENT_EXTRA_SHORTCUTS_ID, ae.id)
       }
 
       val finalName = name.ifEmpty { " " }
-      val pinShortcutInfo = ShortcutInfo.Builder(Utils.getApp(), ae.id)
+      val pinShortcutInfo = ShortcutInfo.Builder(Utils.getApp(), pinnedShortcutId(ae.id))
         .setShortLabel(finalName)
         .setIcon(Icon.createWithBitmap(icon.toBitmap()))
         .setIntent(intent)
         .build()
 
-      // Create the PendingIntent object only if your app needs to be notified
-      // that the user allowed the shortcut to be pinned. Note that, if the
-      // pinning operation fails, your app isn't notified. We assume here that the
-      // app has implemented a method called createShortcutResultIntent() that
-      // returns a broadcast intent.
-      val pinnedShortcutCallbackIntent =
-        SHORTCUT_MANAGER.createShortcutResultIntent(pinShortcutInfo)
+      val callbackIntent = Intent(Utils.getApp(), PinShortcutReceiver::class.java).apply {
+        action = PinShortcutReceiver.ACTION_PIN_SHORTCUT_RESULT
+        data = Uri.Builder()
+          .scheme("anywhere")
+          .authority("pinned-shortcut-result")
+          .appendPath(pinShortcutInfo.id)
+          .build()
+      }
+      val callback = PendingIntent.getBroadcast(
+        Utils.getApp(),
+        0,
+        callbackIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
 
-      // Configure the intent so that your app's broadcast receiver gets
-      // the callback successfully.For details, see PendingIntent.getBroadcast().
-      val successCallback = PendingIntent.getBroadcast(
-        Utils.getApp(),  /* request code */0,
-        pinnedShortcutCallbackIntent, FlagDelegate.PENDING_INTENT_FLAG_MUTABLE
-      )
-      SHORTCUT_MANAGER.requestPinShortcut(
-        pinShortcutInfo,
-        successCallback.intentSender
-      )
-      ToastUtil.makeText(R.string.toast_try_to_add_pinned_shortcut)
+      SHORTCUT_MANAGER.requestPinShortcut(pinShortcutInfo, callback.intentSender)
+      ToastUtil.makeText(R.string.toast_pinned_shortcut_requested)
     }
   }
 
@@ -159,4 +159,6 @@ object ShortcutsUtils {
     Utils.getApp().sendBroadcast(resultIntent)
     ToastUtil.makeText(R.string.toast_try_to_add_pinned_shortcut)
   }
+
+  fun pinnedShortcutId(entityId: String) = PINNED_SHORTCUT_ID_PREFIX + entityId
 }

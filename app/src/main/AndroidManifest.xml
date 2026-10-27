@@ -511,6 +511,11 @@
       android:name=".receiver.NotificationClickReceiver"
       android:exported="false" />
 
+    <!--    Pinned shortcut result receiver    -->
+    <receiver
+      android:name=".receiver.PinShortcutReceiver"
+      android:exported="false" />
+
     <!--    Shizuku provider    -->
     <provider
       android:name="rikka.shizuku.ShizukuProvider"
