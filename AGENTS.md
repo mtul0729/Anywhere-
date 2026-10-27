@@ -2,6 +2,14 @@
 
 Android app (Anywhere-). Two Gradle modules: `:app` (the app, `com.absinthe.anywhere_`) and `:color-picker` (vendored `com.flask.colorpicker` library — leave alone unless fixing the picker itself).
 
+## Maintenance policy
+
+- This is an inherited open-source project. Many existing features may be obsolete or low-value; do not assume every discovered defect warrants a fix.
+- The only confirmed core user path is: create a URL Scheme card, add that card as a desktop shortcut, and launch the URL Scheme from the shortcut. Prioritize this path when deciding what to work on.
+- Do not remove, disable, replace, or "clean up" existing features, screens, permissions, data, or compatibility code unless the user explicitly requests that removal. If a legacy or peripheral feature looks broken or obsolete, report it and leave it alone.
+- Do not spend time repairing legacy or peripheral features without explicit direction. A defect report is not authorization to start a repair.
+- User-created data and published releases are not test fixtures. Do not add migrations or compatibility machinery for disposable onboarding content unless explicitly requested.
+
 ## Build / verify
 
 - Requires JDK 17 (CI uses Zulu 17) and Android SDK (compileSdk 35). There is no native build: the legacy `libizuko.so` signature guard was removed.

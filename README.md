@@ -37,6 +37,7 @@ Shell、Collector、冻结应用解冻和无障碍功能需要额外权限，详
 
 - 构建验证：`bash ./gradlew assembleDebug`
 - 可选 Nix 环境：`nix develop -c bash ./gradlew assembleDebug --console=plain`
+- 产品范围与维护边界：[产品范围](docs/product-scope.md)
 - 本地构建、设备安装和 Waydroid 说明：[调试说明](docs/debugging.md)
 - 发布 tag、审批和 Release 流程：[发布说明](docs/releasing.md)
 
