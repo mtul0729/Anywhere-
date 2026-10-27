@@ -1,10 +1,10 @@
 name: Android CI
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - master
+      - alpha
     paths-ignore:
       - '.idea/**'
       - '.gitattributes'
@@ -26,141 +26,23 @@ on:
       - 'NOTICE'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build:
-    name: Build
+  verify:
+    name: Verify
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, '[skip ci]') }}
+    if: ${{ github.event_name != 'push' || !startsWith(github.event.head_commit.message, '[skip ci]') }}
 
     steps:
       - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
       - uses: actions/setup-java@v6
         with:
-          distribution: 'zulu'
+          distribution: zulu
           java-version: 17
       - name: Set up Gradle cache
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
-      - name: Retrieve version
-        env:
-          RUN_NUMBER: ${{ github.run_number }}
-          COMMIT_SHA: ${{ github.sha }}
-        run: |
-          VERSION_CODE=$((2050500 + RUN_NUMBER))
-          VERSION_NAME="2.5.5-${COMMIT_SHA:0:7}.${RUN_NUMBER}"
-          {
-            echo "VERSION_CODE=$VERSION_CODE"
-            echo "VERSION_NAME=$VERSION_NAME"
-            echo "RELEASE_TAG=v$VERSION_NAME"
-          } >> "$GITHUB_ENV"
-      - name: Prepare signing key
-        if: github.event_name != 'pull_request'
-        id: sign
-        env:
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ALIAS }}
-        run: |
-          if [ -z "$SIGNING_KEY" ] || [ -z "$KEY_STORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ]; then
-            echo "Missing signing secrets: SIGNING_KEY, KEY_STORE_PASSWORD or ALIAS" >&2
-            exit 1
-          fi
-          KEYSTORE="$RUNNER_TEMP/anywhere-release.jks"
-          printf '%s' "$SIGNING_KEY" | base64 --decode > "$KEYSTORE"
-          SIGN_MD5=$(keytool -exportcert \
-            -keystore "$KEYSTORE" \
-            -alias "$KEY_ALIAS" \
-            -storepass "$KEY_STORE_PASSWORD" \
-            | openssl dgst -md5 -binary \
-            | xxd -p -u \
-            | tr -d '\n')
-          {
-            echo "EXPECTED_SIGN_MD5=$SIGN_MD5"
-          } >> "$GITHUB_ENV"
-          echo "Signing certificate MD5: $SIGN_MD5"
-      - name: Build signed release
-        if: github.event_name != 'pull_request'
-        run: |
-          bash ./gradlew \
-            -PappVerName="$VERSION_NAME" \
-            -PappVerCode="$VERSION_CODE" \
-            -PexpectedSignMd5="$EXPECTED_SIGN_MD5" \
-            assembleRelease
-      - name: Build unsigned release
-        if: github.event_name == 'pull_request'
-        run: |
-          bash ./gradlew \
-            -PappVerName="$VERSION_NAME" \
-            -PappVerCode="$VERSION_CODE" \
-            assembleRelease
-      - name: Align and sign release APK
-        if: github.event_name != 'pull_request'
-        env:
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ALIAS }}
-        run: |
-          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)
-          ALIGNED="$RUNNER_TEMP/anywhere-aligned.apk"
-          SIGNED="$RUNNER_TEMP/anywhere-signed.apk"
-          ZIPALIGN=$(find "$ANDROID_HOME/build-tools" -name zipalign | sort -V | tail -n 1)
-          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -n 1)
-          "$ZIPALIGN" -p -f 4 "$APK" "$ALIGNED"
-          "$APKSIGNER" sign \
-            --ks "$RUNNER_TEMP/anywhere-release.jks" \
-            --ks-key-alias "$KEY_ALIAS" \
-            --ks-pass "pass:$KEY_STORE_PASSWORD" \
-            --key-pass "pass:$KEY_PASSWORD" \
-            --out "$SIGNED" \
-            "$ALIGNED"
-          mv "$SIGNED" "$APK"
-      - name: Verify signed APK
-        if: github.event_name != 'pull_request'
-        run: |
-          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)
-          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -n 1)
-          if ! CERT_OUTPUT=$("$APKSIGNER" verify --verbose --print-certs "$APK" 2>&1); then
-            printf '%s\n' "$CERT_OUTPUT"
-            exit 1
-          fi
-          printf '%s\n' "$CERT_OUTPUT"
-          CERT_MD5=$(printf '%s\n' "$CERT_OUTPUT" \
-            | sed -n 's/^.*Signer.*certificate MD5 digest: //p' \
-            | tr '[:lower:]' '[:upper:]')
-          echo "APK certificate MD5: $CERT_MD5"
-          if [ "$CERT_MD5" != "$EXPECTED_SIGN_MD5" ]; then
-            echo "APK certificate MD5 does not match signing key" >&2
-            exit 1
-          fi
-      - name: Upload signed release apk
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v7
-        with:
-          name: apk-release
-          path: "app/build/outputs/apk/release/*.apk"
-      - name: Upload unsigned release apk
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v7
-        with:
-          name: apk-unsigned
-          path: "app/build/outputs/apk/release/*.apk"
-      - name: Upload mappings
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v7
-        with:
-          name: mappings
-          path: "app/build/outputs/mapping/release"
-      - name: Create GitHub release
-        if: github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$RELEASE_TAG" \
-            app/build/outputs/apk/release/*.apk \
-            --title "Anywhere- $VERSION_NAME" \
-            --notes "Automated build from ${GITHUB_SHA}. versionCode: ${VERSION_CODE}."
+      - name: Build debug APK
+        run: bash ./gradlew assembleDebug
