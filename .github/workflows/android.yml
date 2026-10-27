@@ -170,16 +170,19 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.sha }}
         run: |
           if [ "$PRERELEASE" = "true" ]; then
             gh release create "$RELEASE_TAG" \
               app/build/outputs/apk/release/*.apk \
+              --target "$TARGET_SHA" \
               --title "Anywhere- $VERSION_NAME (alpha)" \
               --prerelease \
               --notes "Alpha build from ${GITHUB_SHA}. versionCode: ${VERSION_CODE}."
           else
             gh release create "$RELEASE_TAG" \
               app/build/outputs/apk/release/*.apk \
+              --target "$TARGET_SHA" \
               --title "Anywhere- $VERSION_NAME" \
               --notes "Automated build from ${GITHUB_SHA}. versionCode: ${VERSION_CODE}."
           fi
