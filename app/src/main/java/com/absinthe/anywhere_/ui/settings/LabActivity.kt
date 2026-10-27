@@ -55,12 +55,6 @@ class LabActivity : AppBarActivity<ActivityLabBinding>() {
           true
         }
       }
-      findPreference<TwoStatePreference>(Const.PREF_DEPRECATED_SC_CREATING_METHOD)?.apply {
-        setOnPreferenceChangeListener { _, newValue ->
-          GlobalValues.deprecatedScCreatingMethod = newValue as Boolean
-          true
-        }
-      }
       findPreference<TwoStatePreference>(Const.PREF_SHOW_DEFREEZING_TOAST)?.apply {
         setOnPreferenceChangeListener { _, newValue ->
           GlobalValues.showDefreezingToast = newValue as Boolean

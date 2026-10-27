@@ -20,7 +20,7 @@ android {
   defaultConfig {
     applicationId = "com.absinthe.anywhere_"
     namespace = "com.absinthe.anywhere_"
-    minSdk = 26
+    minSdk = 33
     targetSdk = 35
     versionCode = appVerCode
     versionName = appVerName

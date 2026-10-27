@@ -139,12 +139,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(),
     getAnywhereIntent(intent)
     backupIfNeeded()
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-          Timber.d("Request post notification: $isGranted")
-        }
-    }
+    requestPermissionLauncher =
+      registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        Timber.d("Request post notification: $isGranted")
+      }
     checkNotificationPermission()
     checkCardCategory()
   }
@@ -716,15 +714,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(),
   }
 
   private fun checkNotificationPermission() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      if (ContextCompat.checkSelfPermission(
-          this,
-          Manifest.permission.POST_NOTIFICATIONS
-        ) != PackageManager.PERMISSION_GRANTED
-      ) {
-        if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-          requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
+    if (ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.POST_NOTIFICATIONS
+      ) != PackageManager.PERMISSION_GRANTED
+    ) {
+      if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
       }
     }
   }

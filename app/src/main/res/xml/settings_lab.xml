@@ -20,13 +20,6 @@
       app:title="@string/settings_editor_entry_animation" />
 
     <rikka.material.preference.MaterialSwitchPreference
-      app:defaultValue="false"
-      app:icon="@drawable/ic_deprecate_icon"
-      app:key="deprecatedScCreatingMethod"
-      app:summary="@string/settings_deprecated_sc_creating_method_summary"
-      app:title="@string/settings_deprecated_sc_creating_method" />
-
-    <rikka.material.preference.MaterialSwitchPreference
       app:defaultValue="true"
       app:icon="@drawable/ic_snowflake"
       app:key="showDefreezingToast"

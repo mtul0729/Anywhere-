@@ -8,7 +8,6 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.absinthe.anywhere_.R
-import com.absinthe.anywhere_.constants.GlobalValues
 import com.absinthe.anywhere_.model.database.AnywhereEntity
 import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ShortcutsUtils
@@ -56,17 +55,10 @@ class CreateShortcutDialogFragment : AnywhereDialogFragment() {
     return builder.setView(mBuilder.root)
       .setTitle(R.string.dialog_set_icon_and_name_title)
       .setPositiveButton(R.string.dialog_delete_positive_button) { _: DialogInterface?, _: Int ->
-        if (AppUtils.atLeastO() && !GlobalValues.deprecatedScCreatingMethod) {
-          ShortcutsUtils.addPinnedShortcut(
-            entity,
-            mBuilder.ivIcon.drawable, mBuilder.etName.text.toString()
-          )
-        } else {
-          ShortcutsUtils.addHomeShortcutPreO(
-            entity,
-            mBuilder.ivIcon.drawable, mBuilder.etName.text.toString()
-          )
-        }
+        ShortcutsUtils.addPinnedShortcut(
+          entity,
+          mBuilder.ivIcon.drawable, mBuilder.etName.text.toString()
+        )
       }
       .setNegativeButton(android.R.string.cancel, null)
       .create()

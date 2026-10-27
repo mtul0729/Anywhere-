@@ -193,12 +193,6 @@ object GlobalValues {
       mmkv.encode(Const.PREF_EDITOR_ENTRY_ANIM, value)
     }
 
-  var deprecatedScCreatingMethod
-    get() = mmkv.decodeBool(Const.PREF_DEPRECATED_SC_CREATING_METHOD, false)
-    set(value) {
-      mmkv.encode(Const.PREF_DEPRECATED_SC_CREATING_METHOD, value)
-    }
-
   var showSystemApps
     get() = mmkv.decodeBool(Const.PREF_SHOW_SYSTEM_APPS, false)
     set(value) {

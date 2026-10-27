@@ -1,7 +1,6 @@
 package com.absinthe.anywhere_.utils
 
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
@@ -141,23 +140,6 @@ object ShortcutsUtils {
       SHORTCUT_MANAGER.requestPinShortcut(pinShortcutInfo, callback.intentSender)
       ToastUtil.makeText(R.string.toast_pinned_shortcut_requested)
     }
-  }
-
-  fun addHomeShortcutPreO(ae: AnywhereEntity, icon: Drawable, name: String) {
-    val shortcutIntent = Intent().apply {
-      component = ComponentName(Utils.getApp(), ShortcutsActivity::class.java)
-      flags = Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or Intent.FLAG_ACTIVITY_NEW_TASK
-      action = ShortcutsActivity.ACTION_START_ENTITY
-      putExtra(Const.INTENT_EXTRA_SHORTCUTS_ID, ae.id)
-    }
-    val resultIntent = Intent().apply {
-      putExtra(Intent.EXTRA_SHORTCUT_ICON, icon.toBitmap())
-      putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent)
-      putExtra(Intent.EXTRA_SHORTCUT_NAME, name)
-      action = "com.android.launcher.action.INSTALL_SHORTCUT"
-    }
-    Utils.getApp().sendBroadcast(resultIntent)
-    ToastUtil.makeText(R.string.toast_try_to_add_pinned_shortcut)
   }
 
   fun pinnedShortcutId(entityId: String) = PINNED_SHORTCUT_ID_PREFIX + entityId

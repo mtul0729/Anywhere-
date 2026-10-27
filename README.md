@@ -6,7 +6,7 @@ Anywhere- 是一个 Android 快捷卡片应用：把 URL Scheme、Activity、She
 
 ## 安装和更新
 
-从本 fork 的 [GitHub Releases](https://github.com/mtul0729/Anywhere-/releases) 下载 `*-release.apk`。正式包只支持 ARM 设备（`arm64-v8a` / `armeabi-v7a`），最低 Android 8.0。
+从本 fork 的 [GitHub Releases](https://github.com/mtul0729/Anywhere-/releases) 下载 `*-release.apk`。正式包只支持 ARM 设备（`arm64-v8a` / `armeabi-v7a`），最低 Android 13。
 
 推荐用 [Obtainium](docs/obtainium.md) 跟踪更新。普通提交不会发布 APK；只有发布 tag 才会签名并创建 Release。第一次从其他签名版本切换时需要先备份，再卸载旧版本。
 

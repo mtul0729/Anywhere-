@@ -30,7 +30,6 @@ import com.absinthe.anywhere_.ui.editor.EditorActivity
 import com.absinthe.anywhere_.ui.editor.impl.SWITCH_OFF
 import com.absinthe.anywhere_.ui.editor.impl.SWITCH_ON
 import com.absinthe.anywhere_.ui.qrcode.QRCodeCollectionActivity
-import com.absinthe.anywhere_.utils.AppUtils.atLeastO
 import com.absinthe.anywhere_.utils.AppUtils.isAppFrozen
 import com.absinthe.anywhere_.utils.ShortcutsUtils
 import com.absinthe.anywhere_.utils.UxUtils
@@ -428,19 +427,11 @@ class BaseCardAdapter(
       if (index < data.size) {
         entity = data[index]
         withContext(Dispatchers.Main) {
-          if (atLeastO()) {
-            ShortcutsUtils.addPinnedShortcut(
-              entity,
-              UxUtils.getAppIcon(Utils.getApp(), entity, 45.dp),
-              entity.appName
-            )
-          } else {
-            ShortcutsUtils.addHomeShortcutPreO(
-              entity,
-              UxUtils.getAppIcon(Utils.getApp(), entity, 45.dp),
-              entity.appName
-            )
-          }
+          ShortcutsUtils.addPinnedShortcut(
+            entity,
+            UxUtils.getAppIcon(Utils.getApp(), entity, 45.dp),
+            entity.appName
+          )
         }
 
         delay(200)
