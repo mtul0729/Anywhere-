@@ -26,7 +26,7 @@ debug 包的包名带 `.debug` 后缀，例如 `com.absinthe.anywhere_.debug`，
 
 ## 2. 从 CI 获取 APK
 
-每次推送 `master` / `alpha` 的 `Android CI` 只验证 `assembleDebug`，不提供下载文件。需要 APK 时，在 GitHub Actions 手动运行 **Full Build**：
+每次推送 `master` 的 `Android CI` 只验证 `assembleDebug`，不提供下载文件。需要 APK 时，在 GitHub Actions 手动运行 **Full Build**：
 
 1. 选择 **Full Build**。
 2. 需要 unsigned Release 时保留 `build_release`；只要 debug 包则关闭。

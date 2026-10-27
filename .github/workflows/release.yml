@@ -58,16 +58,10 @@ jobs:
         run: |
           cd source
           git fetch --force origin \
-            '+refs/heads/master:refs/remotes/origin/master' \
-            '+refs/heads/alpha:refs/remotes/origin/alpha'
+            '+refs/heads/master:refs/remotes/origin/master'
           git checkout --detach "$TAG"
-          if [[ "$PRERELEASE" = true ]]; then
-            RELEASE_BRANCH=origin/alpha
-          else
-            RELEASE_BRANCH=origin/master
-          fi
-          if ! git merge-base --is-ancestor "$TAG^{commit}" "$RELEASE_BRANCH"; then
-            echo "$TAG must be reachable from $RELEASE_BRANCH" >&2
+          if ! git merge-base --is-ancestor "$TAG^{commit}" origin/master; then
+            echo "$TAG must be reachable from origin/master" >&2
             exit 1
           fi
       - name: Check version ordering

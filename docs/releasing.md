@@ -4,7 +4,7 @@
 
 ## 日常验证
 
-推送到 `master` 或 `alpha`、以及 PR，都会运行 `Android CI`：
+推送到 `master` 以及 PR，都会运行 `Android CI`：
 
 - 只执行 `assembleDebug`
 - 不上传 artifact
@@ -37,28 +37,28 @@ final = base + 99
 
 例如：
 
-- `v2.5.5-alpha.16` → `2050516`
-- `v2.5.5` → `2050599`
-- 下一个补丁版本 `v2.5.6-alpha.1` → `2050601`
+- `v2.5.6-alpha.1` → `2050601`
+- `v2.5.6` → `2050699`
+- 下一个补丁版本 `v2.5.7-alpha.1` → `2050701`
 
 发布后不能修改或复用 tag。发布失败也消耗编号，修复后使用下一个 alpha 编号或新版本号。
 
 ## 发布步骤
 
 1. 在目标提交上本地构建并实际验证。
-2. 确认该提交已经在 `alpha`（alpha 发布）或 `master`（正式发布）的祖先链上。
+2. 确认该提交已经在 `master` 的祖先链上。
 3. 创建并推送 tag：
 
    ```bash
-   git tag v2.5.5-alpha.16 <commit>
-   git push origin v2.5.5-alpha.16
+   git tag v2.5.6-alpha.1 <commit>
+   git push origin v2.5.6-alpha.1
    ```
 
 4. `Release` workflow 会先无密钥构建 unsigned APK。
 5. 在 `release` environment 中批准发布任务。
 6. workflow 下载同一份构建产物，签名、校验包名/版本/证书/SHA256，然后创建 Release。
 
-alpha tag 必须能从 `alpha` 到达，正式 tag 必须能从 `master` 到达。versionCode 必须高于已有 Release。
+alpha 和正式 tag 都必须能从 `master` 到达。versionCode 必须高于已有 Release。
 
 ## 失败与重跑
 
