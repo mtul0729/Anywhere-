@@ -11,7 +11,7 @@
 - 不读取签名密钥
 - 不创建 Release
 
-需要可安装的 debug APK 或 unsigned release APK 时，在 Actions 中手动运行 **Full Build**。artifact 保留 7 天。
+需要可安装的 debug APK 或 unsigned release APK 时，在 Actions 中手动运行 **Full Build**。artifact 保留 7 天。本地构建、安装和 Waydroid 验证见 [调试说明](debugging.md)。
 
 ## 版本规则
 

@@ -5,7 +5,7 @@ Android app (Anywhere-). Two Gradle modules: `:app` (the app, `com.absinthe.anyw
 ## Build / verify
 
 - Requires JDK 17 (CI uses Zulu 17), Android SDK (compileSdk 35), NDK `25.0.8775105`, CMake (native lib `izuko`, see `app/CMakeLists.txt` + `app/src/main/cpp/izuko.cpp`).
-- Local build: `./gradlew assembleDebug` (use this for verification; no device/emulator needed). Release builds pass both `-PappVerName=<version>` and `-PappVerCode=<code>`.
+- Local build: `nix develop -c bash ./gradlew assembleDebug --console=plain` (or `bash ./gradlew assembleDebug` with an existing matching toolchain; `gradlew` is not executable). No device/emulator is needed for compile verification. Release builds pass both `-PappVerName=<version>` and `-PappVerCode=<code>`. Device install and shortcut verification are documented in `docs/debugging.md`.
 - There is no real test suite — only `ExampleUnitTest` / `ExampleInstrumentedTest` stubs. Do not add test infra; verify with `assembleDebug`.
 - Release-only pipeline, do not touch unless asked: `optimizeReleaseRes` task auto-finalizes `optimizeReleaseResources` (uses `app/aapt2-resources.cfg` + `aapt2 optimize --collapse-resource-names`), R8 minify + `shrinkResources`, APK rename in `app/build.gradle.kts` (`Anywhere-<ver>-<code>-<variant>.apk`), signing and GitHub Release publication.
 
