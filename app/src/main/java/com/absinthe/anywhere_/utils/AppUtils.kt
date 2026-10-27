@@ -10,7 +10,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.*
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
@@ -346,36 +345,6 @@ object AppUtils {
     }
   }
 
-  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
-  fun atLeastS(): Boolean {
-    return Build.VERSION.SDK_INT >= 31
-  }
-
-  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
-  fun atLeastR(): Boolean {
-    return Build.VERSION.SDK_INT >= 30
-  }
-
-  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
-  fun atLeastP(): Boolean {
-    return Build.VERSION.SDK_INT >= 28
-  }
-
-  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O)
-  fun atLeastO(): Boolean {
-    return Build.VERSION.SDK_INT >= 26
-  }
-
-  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.N_MR1)
-  fun atLeastNMR1(): Boolean {
-    return Build.VERSION.SDK_INT >= 25
-  }
-
-  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.N)
-  fun atLeastN(): Boolean {
-    return Build.VERSION.SDK_INT >= 24
-  }
-
   /**
    * Get package name by url scheme
    *
@@ -506,10 +475,6 @@ fun doOnMainThreadIdle(action: () -> Unit, timeout: Long? = null) {
   if (Looper.getMainLooper() == Looper.myLooper()) {
     setupIdleHandler(Looper.myQueue())
   } else {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      setupIdleHandler(Looper.getMainLooper().queue)
-    } else {
-      handler.post { setupIdleHandler(Looper.myQueue()) }
-    }
+    setupIdleHandler(Looper.getMainLooper().queue)
   }
 }

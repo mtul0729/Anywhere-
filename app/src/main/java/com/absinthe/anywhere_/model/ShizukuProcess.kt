@@ -1,6 +1,5 @@
 package com.absinthe.anywhere_.model
 
-import com.absinthe.anywhere_.utils.AppUtils
 import rikka.shizuku.Shizuku
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -39,11 +38,7 @@ object ShizukuProcess {
     process.waitFor()
     inputThread.join()
 
-    if (AppUtils.atLeastO()) {
-      process.destroyForcibly()
-    } else {
-      process.destroy()
-    }
+    process.destroyForcibly()
 
     return sb.toString()
   }

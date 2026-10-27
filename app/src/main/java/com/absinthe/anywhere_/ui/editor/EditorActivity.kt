@@ -4,14 +4,12 @@ import android.app.Activity
 import android.content.*
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.Menu
 import android.view.View
 import android.view.Window
 import android.widget.FrameLayout
-import androidx.annotation.RequiresApi
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -31,8 +29,6 @@ import com.absinthe.anywhere_.services.overlay.OverlayService
 import com.absinthe.anywhere_.ui.dialog.EXTRA_FROM_WORKFLOW
 import com.absinthe.anywhere_.ui.editor.impl.WorkflowEditorFragment
 import com.absinthe.anywhere_.utils.*
-import com.absinthe.anywhere_.utils.AppUtils.atLeastNMR1
-import com.absinthe.anywhere_.utils.AppUtils.atLeastR
 import com.absinthe.anywhere_.utils.manager.DialogManager
 import com.absinthe.anywhere_.utils.manager.DialogManager.showAddShortcutDialog
 import com.absinthe.anywhere_.utils.manager.DialogManager.showCannotAddShortcutDialog
@@ -278,12 +274,10 @@ class EditorActivity : BaseActivity<ActivityEditorBinding>() {
       setNavigationItemSelectedListener {
         when (it.itemId) {
           R.id.add_shortcuts -> {
-            if (atLeastNMR1()) {
-              if (!GlobalValues.shortcutsList.contains(entity.id)) {
-                addShortcut(this@EditorActivity, entity)
-              } else {
-                removeShortcut(this@EditorActivity, entity)
-              }
+            if (!GlobalValues.shortcutsList.contains(entity.id)) {
+              addShortcut(this@EditorActivity, entity)
+            } else {
+              removeShortcut(this@EditorActivity, entity)
             }
           }
           R.id.add_home_shortcuts -> {
@@ -334,15 +328,11 @@ class EditorActivity : BaseActivity<ActivityEditorBinding>() {
       }
 
       menu.findItem(R.id.add_shortcuts)?.let {
-        if (atLeastNMR1()) {
-          if (GlobalValues.shortcutsList.contains(entity.id)) {
-            binding.navigationView.apply {
-              menu.clear()
-              inflateMenu(R.menu.editor_added_shortcut_menu)
-            }
+        if (GlobalValues.shortcutsList.contains(entity.id)) {
+          binding.navigationView.apply {
+            menu.clear()
+            inflateMenu(R.menu.editor_added_shortcut_menu)
           }
-        } else {
-          it.isVisible = false
         }
       }
 
@@ -359,9 +349,7 @@ class EditorActivity : BaseActivity<ActivityEditorBinding>() {
       startOverlayImpl()
 
     } else {
-      if (atLeastR()) {
-        ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
-      }
+      ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
       PermissionUtils.requestDrawOverlays(object : PermissionUtils.SimpleCallback {
         override fun onGranted() {
           startOverlayImpl()
@@ -391,9 +379,8 @@ class EditorActivity : BaseActivity<ActivityEditorBinding>() {
     finish()
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   private fun addShortcut(context: Context, ae: AnywhereEntity) {
-    if (ShortcutsUtils.SHORTCUT_MANAGER!!.dynamicShortcuts.size < 3) {
+    if (ShortcutsUtils.SHORTCUT_MANAGER.dynamicShortcuts.size < 3) {
       val builder = AnywhereDialogBuilder(context)
       showAddShortcutDialog(context, builder, ae) {
         ShortcutsUtils.addShortcut(ae)
@@ -407,7 +394,6 @@ class EditorActivity : BaseActivity<ActivityEditorBinding>() {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   private fun removeShortcut(context: Context, ae: AnywhereEntity) {
     showRemoveShortcutDialog(context, ae) {
       ShortcutsUtils.removeShortcut(ae)

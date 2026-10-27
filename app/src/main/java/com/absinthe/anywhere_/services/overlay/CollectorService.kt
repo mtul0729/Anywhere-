@@ -12,7 +12,6 @@ import com.absinthe.anywhere_.constants.GlobalValues.dumpInterval
 import com.absinthe.anywhere_.constants.GlobalValues.isCollectorPlus
 import com.absinthe.anywhere_.model.manager.CollectorWindowManager
 import com.absinthe.anywhere_.model.manager.CoordinatorWindowManager
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.CommandUtils.execAdbCmd
 import com.absinthe.anywhere_.utils.NotifyUtils
 import com.absinthe.anywhere_.utils.ToastUtil
@@ -69,11 +68,7 @@ class CollectorService : Service() {
     if (!PermissionUtils.isGrantedDrawOverlays()) {
       ToastUtil.Toasty.show(
         this,
-        if (AppUtils.atLeastR()) {
-          R.string.toast_overlay_choose_anywhere
-        } else {
-          R.string.toast_permission_overlap
-        }
+        R.string.toast_overlay_choose_anywhere
       )
 
       PermissionUtils.requestDrawOverlays(object : PermissionUtils.SimpleCallback {
@@ -122,11 +117,7 @@ class CollectorService : Service() {
     if (!PermissionUtils.isGrantedDrawOverlays()) {
       ToastUtil.Toasty.show(
         this,
-        if (AppUtils.atLeastR()) {
-          R.string.toast_overlay_choose_anywhere
-        } else {
-          R.string.toast_permission_overlap
-        }
+        R.string.toast_overlay_choose_anywhere
       )
 
       PermissionUtils.requestDrawOverlays(object : PermissionUtils.SimpleCallback {

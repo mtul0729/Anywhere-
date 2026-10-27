@@ -23,7 +23,6 @@ import com.absinthe.anywhere_.constants.OnceTag
 import com.absinthe.anywhere_.databinding.EditorA11yBinding
 import com.absinthe.anywhere_.ui.editor.BaseEditorFragment
 import com.absinthe.anywhere_.ui.list.*
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ShortcutsUtils
 import com.absinthe.anywhere_.utils.handler.Opener
 import com.absinthe.anywhere_.utils.manager.DialogManager
@@ -38,23 +37,14 @@ class A11yEditorFragment : BaseEditorFragment() {
     private val adapter = A11yAdapter()
 
     private val nodeEditMenu by lazy {
-        if (AppUtils.atLeastN()) {
-            listOf(
-                requireContext().getString(R.string.bsd_a11y_menu_click_text),
-                requireContext().getString(R.string.bsd_a11y_menu_click_view_id),
-                requireContext().getString(R.string.bsd_a11y_menu_long_press_text),
-                requireContext().getString(R.string.bsd_a11y_menu_long_press_view_id),
-                requireContext().getString(R.string.bsd_a11y_menu_click_coord),
-                requireContext().getString(R.string.bsd_a11y_menu_long_press_coord),
-            )
-        } else {
-            listOf(
-                requireContext().getString(R.string.bsd_a11y_menu_click_text),
-                requireContext().getString(R.string.bsd_a11y_menu_click_view_id),
-                requireContext().getString(R.string.bsd_a11y_menu_long_press_text),
-                requireContext().getString(R.string.bsd_a11y_menu_long_press_view_id),
-            )
-        }
+        listOf(
+            requireContext().getString(R.string.bsd_a11y_menu_click_text),
+            requireContext().getString(R.string.bsd_a11y_menu_click_view_id),
+            requireContext().getString(R.string.bsd_a11y_menu_long_press_text),
+            requireContext().getString(R.string.bsd_a11y_menu_long_press_view_id),
+            requireContext().getString(R.string.bsd_a11y_menu_click_coord),
+            requireContext().getString(R.string.bsd_a11y_menu_long_press_coord),
+        )
     }
 
     override fun setBinding(inflater: LayoutInflater, container: ViewGroup?): View {
@@ -203,9 +193,7 @@ class A11yEditorFragment : BaseEditorFragment() {
         if (isEditMode) {
             if (doneItem.appName != item.appName) {
                 if (GlobalValues.shortcutsList.contains(doneItem.id)) {
-                    if (AppUtils.atLeastNMR1()) {
-                        ShortcutsUtils.updateShortcut(doneItem)
-                    }
+                    ShortcutsUtils.updateShortcut(doneItem)
                 }
             }
             AnywhereApplication.sRepository.update(doneItem)

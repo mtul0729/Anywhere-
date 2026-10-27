@@ -6,7 +6,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import com.absinthe.anywhere_.services.overlay.ICollectorService
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.view.home.CollectorView
 import timber.log.Timber
 
@@ -56,11 +55,7 @@ class CollectorWindowManager(context: Context, binder: ICollectorService) {
       format = PixelFormat.RGBA_8888
       flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 
-      type = if (AppUtils.atLeastO()) {
-        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-      } else {
-        WindowManager.LayoutParams.TYPE_PHONE
-      }
+      type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
     }
   }
 }

@@ -6,7 +6,6 @@ import android.graphics.PixelFormat
 import android.view.WindowManager
 import com.absinthe.anywhere_.services.overlay.ICollectorService
 import com.absinthe.anywhere_.ui.editor.EditorActivity
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.view.home.CoordinatorView
 import com.absinthe.libraries.utils.manager.SystemBarManager
 import timber.log.Timber
@@ -55,11 +54,7 @@ class CoordinatorWindowManager(
       height = WindowManager.LayoutParams.MATCH_PARENT
       format = PixelFormat.RGBA_8888
 
-      type = if (AppUtils.atLeastO()) {
-        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-      } else {
-        WindowManager.LayoutParams.TYPE_PHONE
-      }
+      type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
     }
   }
 }

@@ -126,18 +126,9 @@ class SettingsActivity : AppBarActivity<ActivitySettingsBinding>() {
         }
       }
       findPreference<Preference>(Const.PREF_CLEAR_SHORTCUTS)?.apply {
-        if (!AppUtils.atLeastNMR1()) {
-          isVisible = false
-        } else {
-          setOnPreferenceClickListener {
-            DialogManager.showClearShortcutsDialog(requireActivity())
-            true
-          }
-        }
-      }
-      findPreference<Preference>(Const.PREF_TILES)?.apply {
-        if (!AppUtils.atLeastN()) {
-          isVisible = false
+        setOnPreferenceClickListener {
+          DialogManager.showClearShortcutsDialog(requireActivity())
+          true
         }
       }
       findPreference<TwoStatePreference>(Const.PREF_COLLECTOR_PLUS)?.apply {

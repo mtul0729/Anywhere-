@@ -91,7 +91,7 @@ object ToastUtil {
       toast?.get()?.cancel()
       toast = null
 
-      if (AppUtils.atLeastR() && context !is ContextThemeWrapper) {
+      if (context !is ContextThemeWrapper) {
         Toast(context).also {
           it.duration = duration
           it.setText(message)

@@ -20,7 +20,6 @@ import com.absinthe.anywhere_.model.database.PageEntity
 import com.absinthe.anywhere_.ui.editor.EXTRA_EDIT_MODE
 import com.absinthe.anywhere_.ui.editor.EXTRA_ENTITY
 import com.absinthe.anywhere_.ui.editor.EditorActivity
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ToastUtil
 import com.absinthe.anywhere_.utils.manager.ShellManager
 import com.absinthe.anywhere_.utils.manager.ShizukuHelper
@@ -84,9 +83,7 @@ class AnywhereViewModel(application: Application) : AndroidViewModel(application
             listener.onStart()
           }
         } else {
-          if (AppUtils.atLeastR()) {
-            ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
-          }
+          ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
           PermissionUtils.requestDrawOverlays(object : PermissionUtils.SimpleCallback {
             override fun onGranted() {
               if (ShizukuHelper.checkPermission(activity)) {
@@ -108,9 +105,7 @@ class AnywhereViewModel(application: Application) : AndroidViewModel(application
             ShellManager.acquireRoot()
           }
         } else {
-          if (AppUtils.atLeastR()) {
-            ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
-          }
+          ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
           PermissionUtils.requestDrawOverlays(object : PermissionUtils.SimpleCallback {
             override fun onGranted() {
               if (Shell.isAppGrantedRoot() == true) {

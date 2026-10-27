@@ -7,7 +7,6 @@ import android.view.View
 import android.view.WindowManager
 import com.absinthe.anywhere_.model.database.AnywhereEntity
 import com.absinthe.anywhere_.services.overlay.IOverlayService
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.view.home.OverlayView
 import timber.log.Timber
 
@@ -27,11 +26,7 @@ class OverlayWindowManager(private val context: Context, private val binder: IOv
       format = PixelFormat.RGBA_8888
       flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 
-      type = if (AppUtils.atLeastO()) {
-        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-      } else {
-        WindowManager.LayoutParams.TYPE_PHONE
-      }
+      type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
     }
     val overlayView = OverlayView(context, binder, layoutParams).apply {
       this.entity = entity

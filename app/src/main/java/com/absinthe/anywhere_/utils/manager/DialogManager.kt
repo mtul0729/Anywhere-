@@ -3,12 +3,10 @@ package com.absinthe.anywhere_.utils.manager
 import android.app.Activity
 import android.content.*
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.Spanned
 import android.view.ContextThemeWrapper
 import android.view.WindowManager
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
@@ -68,9 +66,7 @@ object DialogManager {
       .setTitle(R.string.dialog_reset_background_confirm_title)
       .setMessage(R.string.dialog_reset_shortcuts_confirm_message)
       .setPositiveButton(R.string.dialog_delete_positive_button) { _, _ ->
-        if (AppUtils.atLeastNMR1()) {
-          ShortcutsUtils.clearAllShortcuts()
-        }
+        ShortcutsUtils.clearAllShortcuts()
       }
       .setNegativeButton(android.R.string.cancel, null)
       .show()
@@ -132,7 +128,6 @@ object DialogManager {
       .show()
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   fun showAddShortcutDialog(
     context: Context,
     builder: AnywhereDialogBuilder,
@@ -153,7 +148,6 @@ object DialogManager {
       .show()
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   fun showCannotAddShortcutDialog(context: Context, action: () -> Unit) {
     AnywhereDialogBuilder(context)
       .setTitle(R.string.dialog_cant_add_shortcut_title)
@@ -163,7 +157,6 @@ object DialogManager {
       .show()
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   fun showRemoveShortcutDialog(context: Context, ae: AnywhereEntity, action: () -> Unit) {
     val builder = AnywhereDialogBuilder(context)
     builder.setTitle(R.string.dialog_remove_shortcut_title)
@@ -348,13 +341,7 @@ object DialogManager {
             }
             .create()
           if (context !is ContextThemeWrapper) {
-            dialog.window?.setType(
-              if (AppUtils.atLeastO()) {
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-              } else {
-                WindowManager.LayoutParams.TYPE_PHONE
-              }
-            )
+            dialog.window?.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
           }
           dialog.show()
         }

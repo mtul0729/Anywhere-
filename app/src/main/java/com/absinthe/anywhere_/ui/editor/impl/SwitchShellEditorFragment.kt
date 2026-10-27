@@ -8,7 +8,6 @@ import com.absinthe.anywhere_.R
 import com.absinthe.anywhere_.constants.GlobalValues
 import com.absinthe.anywhere_.databinding.EditorSwitchShellBinding
 import com.absinthe.anywhere_.ui.editor.BaseEditorFragment
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ShortcutsUtils
 
 const val SWITCH_OFF = "off"
@@ -60,9 +59,7 @@ class SwitchShellEditorFragment : BaseEditorFragment() {
         if (isEditMode) {
             if (doneItem.appName != item.appName) {
                 if (GlobalValues.shortcutsList.contains(doneItem.id)) {
-                    if (AppUtils.atLeastNMR1()) {
-                        ShortcutsUtils.updateShortcut(doneItem)
-                    }
+                    ShortcutsUtils.updateShortcut(doneItem)
                 }
             }
             AnywhereApplication.sRepository.update(doneItem)

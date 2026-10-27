@@ -118,11 +118,7 @@ class AppDetailActivity : AppBarActivity<ActivityAppDetailBinding>() {
         val appPackageInfo = if (!isFrozen) {
           packageInfo
         } else {
-          val pmFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            PackageManager.MATCH_DISABLED_COMPONENTS
-          } else {
-            PackageManager.GET_DISABLED_COMPONENTS
-          }
+          val pmFlag = PackageManager.MATCH_DISABLED_COMPONENTS
           // applicationInfo is nullable since compileSdk 35; without a sourceDir
           // there is nothing to parse, so fall through to the null-safe chain below
           val sourceDir = packageInfo.applicationInfo?.sourceDir

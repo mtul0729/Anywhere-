@@ -17,7 +17,6 @@ import com.absinthe.anywhere_.model.database.setBrightWhenShowImage
 import com.absinthe.anywhere_.ui.editor.BaseEditorFragment
 import com.absinthe.anywhere_.ui.editor.EditorActivity
 import com.absinthe.anywhere_.utils.AppTextUtils
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ShortcutsUtils
 import com.absinthe.anywhere_.utils.ToastUtil
 import com.bumptech.glide.Glide
@@ -112,9 +111,7 @@ class ImageEditorFragment : BaseEditorFragment(), OnButtonCheckedListener {
     if (isEditMode) {
       if (doneItem.appName != item.appName || doneItem.param1 != item.param1) {
         if (GlobalValues.shortcutsList.contains(doneItem.id)) {
-          if (AppUtils.atLeastNMR1()) {
-            ShortcutsUtils.updateShortcut(doneItem)
-          }
+          ShortcutsUtils.updateShortcut(doneItem)
         }
       }
       Timber.d("sasa")

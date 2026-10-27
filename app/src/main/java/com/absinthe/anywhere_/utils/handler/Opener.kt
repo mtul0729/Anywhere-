@@ -260,10 +260,8 @@ class Opener private constructor(context: Context) {
               Timber.e(e)
               if (e is ActivityNotFoundException) {
                 ToastUtil.makeText(R.string.toast_no_react_url)
-              } else if (AppUtils.atLeastN()) {
-                if (e is FileUriExposedException) {
-                  ToastUtil.makeText(R.string.toast_file_uri_exposed)
-                }
+              } else if (e is FileUriExposedException) {
+                ToastUtil.makeText(R.string.toast_file_uri_exposed)
               }
               listener?.onOpened()
             }
@@ -282,10 +280,8 @@ class Opener private constructor(context: Context) {
         Timber.e(e)
         if (e is ActivityNotFoundException) {
           ToastUtil.makeText(R.string.toast_no_react_url)
-        } else if (AppUtils.atLeastN()) {
-          if (e is FileUriExposedException) {
-            ToastUtil.makeText(R.string.toast_file_uri_exposed)
-          }
+        } else if (e is FileUriExposedException) {
+          ToastUtil.makeText(R.string.toast_file_uri_exposed)
         }
         listener?.onOpened()
       }
@@ -472,9 +468,7 @@ class Opener private constructor(context: Context) {
     }
     AnywhereApplication.sRepository.update(ae)
 
-    if (AppUtils.atLeastNMR1()) {
-      ShortcutsUtils.updateShortcut(ae)
-    }
+    ShortcutsUtils.updateShortcut(ae)
   }
 
   private fun openFileEntity(context: Context, item: AnywhereEntity) {
@@ -661,9 +655,7 @@ class Opener private constructor(context: Context) {
                   val y = xy[1].trim().toIntOrNull()
 
                   if (x != null && y != null) {
-                    if (AppUtils.atLeastN()) {
-                      click(x, y)
-                    }
+                    click(x, y)
                   }
                 }
               }
@@ -673,9 +665,7 @@ class Opener private constructor(context: Context) {
                   val x = xy[0].trim().toIntOrNull()
                   val y = xy[1].trim().toIntOrNull()
                   if (x != null && y != null) {
-                    if (AppUtils.atLeastN()) {
-                      longClick(x, y)
-                    }
+                    longClick(x, y)
                   }
                 }
               }

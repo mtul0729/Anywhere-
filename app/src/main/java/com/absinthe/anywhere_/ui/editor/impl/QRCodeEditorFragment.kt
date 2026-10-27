@@ -10,7 +10,6 @@ import com.absinthe.anywhere_.constants.GlobalValues
 import com.absinthe.anywhere_.databinding.EditorQrCodeBinding
 import com.absinthe.anywhere_.model.database.AnywhereEntity
 import com.absinthe.anywhere_.ui.editor.BaseEditorFragment
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ShortcutsUtils
 import com.absinthe.anywhere_.utils.handler.Opener
 
@@ -52,9 +51,7 @@ class QRCodeEditorFragment : BaseEditorFragment() {
         if (isEditMode) {
             if (doneItem.appName != item.appName) {
                 if (GlobalValues.shortcutsList.contains(doneItem.id)) {
-                    if (AppUtils.atLeastNMR1()) {
-                        ShortcutsUtils.updateShortcut(doneItem)
-                    }
+                    ShortcutsUtils.updateShortcut(doneItem)
                 }
             }
             AnywhereApplication.sRepository.update(doneItem)

@@ -7,7 +7,6 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.annotation.RequiresApi
 import com.absinthe.anywhere_.AnywhereApplication
 import com.absinthe.anywhere_.constants.AnywhereType
 import com.absinthe.anywhere_.constants.Const
@@ -19,7 +18,6 @@ import java.io.File
 const val TILE_LABEL = "Label"
 const val TILE_ACTIVE_STATE = "ActiveState"
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 abstract class BaseTileService : TileService() {
 
   private val prefLabel: String = javaClass.simpleName + TILE_LABEL

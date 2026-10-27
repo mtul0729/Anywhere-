@@ -7,8 +7,6 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.absinthe.anywhere_.R
@@ -26,13 +24,9 @@ object ShortcutsUtils {
 
   private const val PINNED_SHORTCUT_ID_PREFIX = "pinned_"
 
-  val SHORTCUT_MANAGER: ShortcutManager? = if (AppUtils.atLeastNMR1()) {
+  val SHORTCUT_MANAGER: ShortcutManager =
     Utils.getApp().getSystemService(ShortcutManager::class.java)
-  } else {
-    null
-  }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   fun addShortcut(ae: AnywhereEntity) {
     val intent = Intent(Utils.getApp(), ShortcutsActivity::class.java).apply {
       when (ae.type) {
@@ -52,7 +46,7 @@ object ShortcutsUtils {
       .setIcon(Icon.createWithBitmap(UxUtils.getAppIcon(Utils.getApp(), ae, 45.dp).toBitmap()))
       .setIntent(intent)
       .build()
-    if (SHORTCUT_MANAGER!!.dynamicShortcuts.size <= 3) {
+    if (SHORTCUT_MANAGER.dynamicShortcuts.size <= 3) {
       SHORTCUT_MANAGER.addDynamicShortcuts(listOf(info))
     }
 
@@ -61,7 +55,6 @@ object ShortcutsUtils {
     GlobalValues.shortcutsList = list
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   fun updateShortcut(ae: AnywhereEntity) {
     val intent = Intent(Utils.getApp(), ShortcutsActivity::class.java).apply {
       when (ae.type) {
@@ -90,26 +83,23 @@ object ShortcutsUtils {
       .setIcon(Icon.createWithBitmap(icon))
       .setIntent(intent)
       .build()
-    SHORTCUT_MANAGER!!.updateShortcuts(listOf(info))
+    SHORTCUT_MANAGER.updateShortcuts(listOf(info))
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   fun removeShortcut(ae: AnywhereEntity) {
     val list = GlobalValues.shortcutsList.toMutableList()
     list.remove(ae.id)
     GlobalValues.shortcutsList = list
-    SHORTCUT_MANAGER!!.removeDynamicShortcuts(listOf(ae.id))
+    SHORTCUT_MANAGER.removeDynamicShortcuts(listOf(ae.id))
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N_MR1)
   fun clearAllShortcuts() {
-    SHORTCUT_MANAGER!!.removeAllDynamicShortcuts()
+    SHORTCUT_MANAGER.removeAllDynamicShortcuts()
     GlobalValues.shortcutsList = listOf()
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.O)
   fun addPinnedShortcut(ae: AnywhereEntity, icon: Drawable, name: String) {
-    if (SHORTCUT_MANAGER?.isRequestPinShortcutSupported == true) {
+    if (SHORTCUT_MANAGER.isRequestPinShortcutSupported) {
       val intent = Intent(Utils.getApp(), ShortcutsActivity::class.java).apply {
         action = ShortcutsActivity.ACTION_START_ENTITY
         putExtra(Const.INTENT_EXTRA_SHORTCUTS_ID, ae.id)

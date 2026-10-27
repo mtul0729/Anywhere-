@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
@@ -59,9 +58,7 @@ object NotifyUtils {
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true)
         .setAutoCancel(false)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        param.setCategory(Notification.CATEGORY_NAVIGATION);
-      }
+      param.setCategory(Notification.CATEGORY_NAVIGATION)
       context.startForeground(COLLECTOR_NOTIFICATION_ID, param.build())
     }
   }

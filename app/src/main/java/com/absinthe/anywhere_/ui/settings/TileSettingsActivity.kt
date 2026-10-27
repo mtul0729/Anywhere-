@@ -3,11 +3,9 @@ package com.absinthe.anywhere_.ui.settings
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.absinthe.anywhere_.AnywhereApplication
@@ -32,7 +30,6 @@ import rikka.widget.borderview.BorderView
 import java.io.File
 
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 open class TileSettingsActivity : AppBarActivity<ActivityTileSettingsBinding>() {
 
   private var mAdapter: TileCardAdapter = TileCardAdapter()

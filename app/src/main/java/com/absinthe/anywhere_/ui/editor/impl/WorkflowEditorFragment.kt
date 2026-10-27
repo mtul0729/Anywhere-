@@ -23,7 +23,6 @@ import com.absinthe.anywhere_.ui.editor.BaseEditorFragment
 import com.absinthe.anywhere_.ui.editor.EXTRA_EDIT_MODE
 import com.absinthe.anywhere_.ui.editor.EXTRA_ENTITY
 import com.absinthe.anywhere_.ui.editor.EditorActivity
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ShortcutsUtils
 import com.absinthe.anywhere_.utils.handler.Opener
 import com.absinthe.anywhere_.utils.manager.DialogManager
@@ -166,9 +165,7 @@ class WorkflowEditorFragment  : BaseEditorFragment() {
         if (isEditMode) {
             if (doneItem.appName != item.appName) {
                 if (GlobalValues.shortcutsList.contains(doneItem.id)) {
-                    if (AppUtils.atLeastNMR1()) {
-                        ShortcutsUtils.updateShortcut(doneItem)
-                    }
+                    ShortcutsUtils.updateShortcut(doneItem)
                 }
             }
             AnywhereApplication.sRepository.update(doneItem)

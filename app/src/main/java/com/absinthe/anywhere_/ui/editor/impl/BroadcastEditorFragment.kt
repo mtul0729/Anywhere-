@@ -13,7 +13,6 @@ import com.absinthe.anywhere_.model.ExtraBean
 import com.absinthe.anywhere_.model.TYPE_STRING
 import com.absinthe.anywhere_.model.database.setExecWithRoot
 import com.absinthe.anywhere_.ui.editor.BaseEditorFragment
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ShortcutsUtils
 import com.absinthe.anywhere_.utils.handler.Opener
 import com.google.gson.Gson
@@ -115,9 +114,7 @@ class BroadcastEditorFragment : BaseEditorFragment() {
     if (isEditMode) {
       if (doneItem.appName != item.appName) {
         if (GlobalValues.shortcutsList.contains(doneItem.id)) {
-          if (AppUtils.atLeastNMR1()) {
-            ShortcutsUtils.updateShortcut(doneItem)
-          }
+          ShortcutsUtils.updateShortcut(doneItem)
         }
       }
       AnywhereApplication.sRepository.update(doneItem)

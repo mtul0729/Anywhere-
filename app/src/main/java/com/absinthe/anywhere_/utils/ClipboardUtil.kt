@@ -1,12 +1,10 @@
 package com.absinthe.anywhere_.utils
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 
 object ClipboardUtil {
@@ -26,11 +24,7 @@ object ClipboardUtil {
   }
 
   fun getClipBoardText(activity: Activity, f: Function) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      getTextFroClipFromAndroidQ(activity, f)
-    } else {
-      f.invoke(getTextFromClip(activity))
-    }
+    getTextFromClipboard(activity, f)
   }
 
   fun clearClipboard(context: Context) {
@@ -39,11 +33,7 @@ object ClipboardUtil {
     cm.setPrimaryClip(mClipData)
   }
 
-  /**
-   * Android Q get content from clipboard
-   */
-  @TargetApi(Build.VERSION_CODES.Q)
-  private fun getTextFroClipFromAndroidQ(activity: Activity, f: Function) {
+  private fun getTextFromClipboard(activity: Activity, f: Function) {
     val runnable = Runnable label@{
       val clipboardManager =
         activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -80,20 +70,6 @@ object ClipboardUtil {
       }
     })
     activity.window.decorView.post(runnable)
-  }
-
-  private fun getTextFromClip(context: Context): String {
-    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    if (!clipboardManager.hasPrimaryClip()) {
-      return ""
-    }
-    val clipData = clipboardManager.primaryClip
-    if (null == clipData || clipData.itemCount < 1) {
-      return ""
-    }
-    val item = clipData.getItemAt(0) ?: return ""
-    val clipText = item.text ?: ""
-    return clipText.toString()
   }
 
   interface Function {

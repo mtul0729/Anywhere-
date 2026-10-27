@@ -4,14 +4,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Build
 import android.os.IBinder
 import android.service.quicksettings.TileService
-import androidx.annotation.RequiresApi
 import com.absinthe.anywhere_.services.overlay.CollectorService
 import com.absinthe.anywhere_.services.overlay.ICollectorService
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 class CollectorTileService : TileService() {
 
   private var collectorBinder: ICollectorService? = null

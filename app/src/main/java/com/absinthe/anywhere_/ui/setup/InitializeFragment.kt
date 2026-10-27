@@ -14,7 +14,6 @@ import com.absinthe.anywhere_.constants.GlobalValues
 import com.absinthe.anywhere_.constants.OnceTag
 import com.absinthe.anywhere_.databinding.*
 import com.absinthe.anywhere_.ui.main.MainActivity
-import com.absinthe.anywhere_.utils.AppUtils
 import com.absinthe.anywhere_.utils.ToastUtil
 import com.absinthe.anywhere_.utils.manager.DialogManager
 import com.absinthe.anywhere_.utils.manager.ShellManager
@@ -262,9 +261,7 @@ class InitializeFragment : Fragment(), OnButtonCheckedListener {
           val isGrant = PermissionUtils.isGrantedDrawOverlays()
           isOverlay.value = isGrant
           if (!isGrant) {
-            if (AppUtils.atLeastR()) {
-              ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
-            }
+            ToastUtil.makeText(R.string.toast_overlay_choose_anywhere)
             PermissionUtils.requestDrawOverlays(object : PermissionUtils.SimpleCallback {
               override fun onGranted() {
                 isOverlay.value = true

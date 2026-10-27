@@ -1,7 +1,6 @@
 package com.absinthe.anywhere_
 
 import android.app.Application
-import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import cn.vove7.andro_accessibility_api.AccessibilityApi
 import com.absinthe.anywhere_.database.AnywhereRepository
@@ -36,9 +35,7 @@ class AnywhereApplication : Application() {
       )
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      HiddenApiBypass.addHiddenApiExemptions("")
-    }
+    HiddenApiBypass.addHiddenApiExemptions("")
 
     app = this
     Once.initialise(this)

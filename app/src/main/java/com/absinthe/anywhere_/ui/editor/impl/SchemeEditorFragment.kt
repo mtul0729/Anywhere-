@@ -96,9 +96,7 @@ class SchemeEditorFragment : BaseEditorFragment() {
     if (isEditMode) {
       if (doneItem.appName != item.appName) {
         if (GlobalValues.shortcutsList.contains(doneItem.id)) {
-          if (AppUtils.atLeastNMR1()) {
-            ShortcutsUtils.updateShortcut(doneItem)
-          }
+          ShortcutsUtils.updateShortcut(doneItem)
         }
       }
       AnywhereApplication.sRepository.update(doneItem)

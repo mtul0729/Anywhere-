@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <style name="Platform.V23.Theme.Anywhere" parent="Theme.Material3Expressive.Dark.Anywhere" />
+  <style name="Platform.V23.Theme.Anywhere" parent="Theme.Material3Expressive.Dark.Anywhere">
+    <item name="android:windowSplashscreenContent">@drawable/splash_drawable</item>
+    <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    <item name="android:forceDarkAllowed">false</item>
+    <item name="android:enforceNavigationBarContrast">false</item>
+    <item name="android:enforceStatusBarContrast">false</item>
+  </style>
 
 </resources>
