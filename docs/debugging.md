@@ -4,7 +4,7 @@
 
 ## 1. 本地构建
 
-推荐用仓库提供的可选 Nix 环境，它会同时提供 JDK 17、Android SDK 35、NDK、CMake 和 Ninja：
+推荐用仓库提供的可选 Nix 环境，它会同时提供 JDK 17 和 Android SDK 35：
 
 ```bash
 nix develop -c bash ./gradlew assembleDebug --console=plain

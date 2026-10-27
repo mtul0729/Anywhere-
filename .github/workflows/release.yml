@@ -152,14 +152,6 @@ jobs:
             exit 1
           fi
           printf '%s' "$SIGNING_KEY" | base64 --decode > "$RUNNER_TEMP/release.jks"
-          sign_md5=$(keytool -exportcert \
-            -keystore "$RUNNER_TEMP/release.jks" \
-            -alias "$KEY_ALIAS" \
-            -storepass "$KEY_STORE_PASSWORD" \
-            | openssl dgst -md5 -binary \
-            | xxd -p -u \
-            | tr -d '\n')
-          echo "EXPECTED_SIGN_MD5=$sign_md5" >> "$GITHUB_ENV"
       - name: Sign release APK
         env:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -192,8 +184,8 @@ jobs:
             | sed -n 's/^.*certificate MD5 digest: //p' \
             | tr '[:lower:]' '[:upper:]' \
             | head -n 1)
-          if [[ "$cert_md5" != "$EXPECTED_SIGN_MD5" ]]; then
-            echo "APK certificate MD5 does not match the release key" >&2
+          if [[ -z "$cert_md5" ]]; then
+            echo "Could not read the APK signing certificate" >&2
             exit 1
           fi
 

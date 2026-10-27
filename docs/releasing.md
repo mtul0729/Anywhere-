@@ -56,7 +56,7 @@ final = base + 99
 
 4. `Release` workflow 会先无密钥构建 unsigned APK。
 5. 在 `release` environment 中批准发布任务。
-6. workflow 下载同一份构建产物，签名、校验包名/版本/证书/SHA256，然后创建 Release。
+6. workflow 下载同一份构建产物，签名并校验包名/版本/证书/SHA256，然后创建 Release。
 
 alpha 和正式 tag 都必须能从 `master` 到达。versionCode 必须高于已有 Release。
 

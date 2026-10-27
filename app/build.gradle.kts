@@ -13,12 +13,9 @@ val defaultVerName = "2.5.5"
 val defaultVerCode = 2050500
 val appVerName = providers.gradleProperty("appVerName").getOrElse(defaultVerName)
 val appVerCode = providers.gradleProperty("appVerCode").getOrElse(defaultVerCode.toString()).toInt()
-val expectedSignMd5 = providers.gradleProperty("expectedSignMd5")
-  .getOrElse("D689B2D1B05AD9C1F7E41B4608C4DDF3")
 
 android {
   compileSdk = 35
-  ndkVersion = "25.0.8775105"
 
   defaultConfig {
     applicationId = "com.absinthe.anywhere_"
@@ -29,11 +26,6 @@ android {
     versionName = appVerName
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     manifestPlaceholders["appName"] = "Anywhere-"
-    externalNativeBuild {
-      cmake {
-        arguments += "-DEXPECTED_SIGN_MD5=$expectedSignMd5"
-      }
-    }
     ndk {
       abiFilters += arrayOf("armeabi-v7a", "arm64-v8a")
     }
@@ -90,12 +82,6 @@ android {
   }
 
   dependenciesInfo.includeInApk = false
-
-    externalNativeBuild {
-        cmake {
-            path = file("CMakeLists.txt")
-        }
-    }
 
   packaging {
     resources {

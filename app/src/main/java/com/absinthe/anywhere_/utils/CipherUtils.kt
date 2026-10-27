@@ -3,7 +3,6 @@ package com.absinthe.anywhere_.utils
 import android.text.TextUtils
 import android.util.Base64
 import androidx.annotation.Keep
-import com.absinthe.anywhere_.utils.manager.IzukoHelper.cipherKey
 import timber.log.Timber
 import java.nio.charset.StandardCharsets
 import javax.crypto.Cipher
@@ -14,7 +13,7 @@ import javax.crypto.spec.SecretKeySpec
 object CipherUtils {
 
   private const val CipherMode = "AES/CFB/NoPadding" //Use CFB to encrypt, IV is need
-  private val KEY = cipherKey
+  private const val KEY = "absintheeeeeeeeeeeeeeeeeeeeeeeee"
 
   private fun generateKey(): SecretKeySpec {
     val data: ByteArray = KEY.toByteArray(StandardCharsets.UTF_8)
