@@ -1,19 +1,19 @@
 # 用 Obtainium 跟踪和更新 Anywhere-
 
-这个 fork 的 GitHub Actions 会在每次推送到 `master` 后自动构建、签名并发布 APK。Obtainium 可以直接从这些 GitHub Releases 跟踪更新，不需要应用商店，也不需要手动下载新版本。
+这个 fork 只在推送发布 tag 时签名并创建 GitHub Release。Obtainium 可以直接从这些 Release 跟踪更新，不需要应用商店，也不需要手动下载新版本。普通提交只做 CI 验证，不会自动产生新版本。
 
 ## 先确认版本和架构
 
 - 下载源：<https://github.com/mtul0729/Anywhere->
-- 正式 Release 示例：<https://github.com/mtul0729/Anywhere-/releases/tag/v2.5.5-2440c9f.6>
+- 正式 Release 示例：<https://github.com/mtul0729/Anywhere-/releases/tag/v2.5.5>
 - 包名：`com.absinthe.anywhere_`
 - APK 架构：`arm64-v8a`（ARMv8 64 位）和 `armeabi-v7a`（32 位 ARM）
 - 不支持：x86、x86_64
 
-当前 Release 只有一个 APK 文件，文件名类似：
+新版本 Release 只有一个 APK 文件，文件名类似：
 
 ```text
-Anywhere-2.5.5-2440c9f.6-2050506-release.apk
+Anywhere-2.5.5-2050599-release.apk
 ```
 
 只要手机是近年的 ARM 安卓设备，通常都兼容。若手机只支持 64 位应用，`arm64-v8a` 也能正常安装。
@@ -80,7 +80,7 @@ APK 正则表达式的含义：
 
 ## 以后的正常更新
 
-1. 上游或本 fork 推送新提交到 `master` 后，GitHub Actions 会自动构建并创建新的 GitHub Release。
+1. 维护者验证提交后，推送正式或 alpha 发布 tag，GitHub Actions 才会签名并创建新的 GitHub Release。
 2. 打开 Obtainium，下拉刷新；也可以在设置中启用后台更新检查和通知。Obtainium 对 GitHub Releases 有缓存，刚发布后可能需稍等一会儿，或在应用详情页手动刷新。
 3. 看到 Anywhere- 有新版本后，点击“更新”或“安装/更新”。
 4. Android 会覆盖安装新版本，应用数据通常保留。
@@ -91,7 +91,7 @@ Obtainium 也可以在后台自动检查并尝试静默安装，但是否成功�
 
 在 Obtainium 的应用详情页中应看到：
 
-- 版本号以 `2.5.5-` 开头，并带有提交短哈希和构建号；
+- 版本号是 `2.5.5` 或 `2.5.5-alpha.N`；
 - 只有一个以 `-release.apk` 结尾的下载文件；
 - APK 包名是 `com.absinthe.anywhere_`；
 - 来源仓库是 `https://github.com/mtul0729/Anywhere-`。

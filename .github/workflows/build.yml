@@ -1,0 +1,66 @@
+name: Full Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_release:
+        description: Build unsigned release APK in addition to debug APK
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build artifacts
+    runs-on: ubuntu-latest
+    env:
+      VERSION_CODE: ${{ github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: zulu
+          java-version: 17
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v6
+      - name: Resolve build identity
+        run: |
+          VERSION_NAME="2.5.5-ci.${GITHUB_SHA:0:7}.${GITHUB_RUN_NUMBER}"
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+      - name: Build debug APK
+        run: |
+          bash ./gradlew \
+            -PappVerName="$VERSION_NAME-debug" \
+            -PappVerCode="$VERSION_CODE" \
+            assembleDebug
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: apk-debug
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 7
+      - name: Build unsigned release APK
+        if: inputs.build_release
+        run: |
+          bash ./gradlew \
+            -PappVerName="$VERSION_NAME" \
+            -PappVerCode="$VERSION_CODE" \
+            assembleRelease
+      - name: Upload unsigned release APK
+        if: inputs.build_release
+        uses: actions/upload-artifact@v7
+        with:
+          name: apk-unsigned
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 7
+      - name: Upload release mappings
+        if: inputs.build_release
+        uses: actions/upload-artifact@v7
+        with:
+          name: mappings
+          path: app/build/outputs/mapping/release
+          retention-days: 7
