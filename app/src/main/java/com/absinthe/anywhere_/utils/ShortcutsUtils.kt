@@ -160,5 +160,5 @@ object ShortcutsUtils {
     ToastUtil.makeText(R.string.toast_try_to_add_pinned_shortcut)
   }
 
-  private fun pinnedShortcutId(entityId: String) = PINNED_SHORTCUT_ID_PREFIX + entityId
+  fun pinnedShortcutId(entityId: String) = PINNED_SHORTCUT_ID_PREFIX + entityId
 }
