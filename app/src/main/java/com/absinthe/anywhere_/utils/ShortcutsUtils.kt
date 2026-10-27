@@ -1,11 +1,13 @@
 package com.absinthe.anywhere_.utils
 
+import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -15,6 +17,7 @@ import com.absinthe.anywhere_.constants.AnywhereType
 import com.absinthe.anywhere_.constants.Const
 import com.absinthe.anywhere_.constants.GlobalValues
 import com.absinthe.anywhere_.model.database.AnywhereEntity
+import com.absinthe.anywhere_.receiver.PinShortcutReceiver
 import com.absinthe.anywhere_.ui.editor.impl.SWITCH_OFF
 import com.absinthe.anywhere_.ui.shortcuts.ShortcutsActivity
 import com.absinthe.libraries.utils.extensions.dp
@@ -120,8 +123,23 @@ object ShortcutsUtils {
         .setIntent(intent)
         .build()
 
-      SHORTCUT_MANAGER.requestPinShortcut(pinShortcutInfo, null)
-      ToastUtil.makeText(R.string.toast_try_to_add_pinned_shortcut)
+      val callbackIntent = Intent(Utils.getApp(), PinShortcutReceiver::class.java).apply {
+        action = PinShortcutReceiver.ACTION_PIN_SHORTCUT_RESULT
+        data = Uri.Builder()
+          .scheme("anywhere")
+          .authority("pinned-shortcut-result")
+          .appendPath(pinShortcutInfo.id)
+          .build()
+      }
+      val callback = PendingIntent.getBroadcast(
+        Utils.getApp(),
+        0,
+        callbackIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
+
+      SHORTCUT_MANAGER.requestPinShortcut(pinShortcutInfo, callback.intentSender)
+      ToastUtil.makeText(R.string.toast_pinned_shortcut_requested)
     }
   }
 
